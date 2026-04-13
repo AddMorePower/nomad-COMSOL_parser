@@ -1,0 +1,61 @@
+definitions:
+  sections:
+    Setting:
+      quantities:
+        description:
+          type: str
+          description: Description of the setting.
+        name:
+          type: str
+          description: Name of the setting.
+        value:
+          type: str
+          description: Value of the setting.
+    Node:
+      quantities:
+        label:
+          type: str
+          description: Label of the node.
+        api_class:
+          type: str
+          description: Class of the node.
+        api_type:
+          type: str
+          description: Type of the node.
+        name:
+          type: str
+          description: Name of the node.
+        display_label:
+          type: str
+          description: Display label of the node.
+      sub_sections:
+        nodes:
+          section: Node
+          repeats: true
+        settings:
+          section: Setting
+          repeats: true
+    COMSOLOutput:
+      quantities:
+        label:
+          type: str
+          description: Label of the node.
+        api_class:
+          type: str
+          description: Class of the node.
+        api_type:
+          type: str
+          description: Type of the node.
+        name:
+          type: str
+          description: Name of the node.
+        display_label:
+          type: str
+          description: Display label of the node.
+      sub_sections:
+        nodes:
+          section: Node
+          repeats: true
+        settings:
+          section: Setting
+          repeats: true

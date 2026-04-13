@@ -3,17 +3,11 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from nomad.datamodel.datamodel import (
-        EntryArchive,
-    )
-    from structlog.stdlib import (
-        BoundLogger,
-    )
+    pass
 
 from nomad.config import config
 from nomad.datamodel.data import Schema
-from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
-from nomad.metainfo import Quantity, SchemaPackage
+from nomad.metainfo import MSection, Quantity, SchemaPackage, SectionProxy, SubSection
 
 configuration = config.get_plugin_entry_point(
     'comsol_parser.schema_packages:schema_package_entry_point'
@@ -22,17 +16,40 @@ configuration = config.get_plugin_entry_point(
 m_package = SchemaPackage()
 
 
-class NewSchemaPackage(Schema):
-    name = Quantity(
-        type=str, a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity)
+class Setting(MSection):
+    description = Quantity(type=str, description='Description of the setting.')
+    name = Quantity(type=str, description='Name of the setting.')
+    value = Quantity(type=str, description='Value of the setting.')
+
+
+class Node(MSection):
+    label = Quantity(type=str, description='Label of the node.')
+    api_class = Quantity(type=str, description='Class of the node.')
+    api_type = Quantity(type=str, description='Type of the node.')
+    name = Quantity(type=str, description='Name of the node.')
+    display_label = Quantity(type=str, description='Display label of the node.')
+    nodes = SubSection(
+        sub_section=SectionProxy('Node'),
+        repeats=True,
+        description='Child nodes of the node.',
     )
-    message = Quantity(type=str)
+    settings = SubSection(
+        sub_section=Setting.m_def, repeats=True, description='Settings of the node.'
+    )
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        super().normalize(archive, logger)
 
-        logger.info('NewSchema.normalize', parameter=configuration.parameter)
-        self.message = f'Hello {self.name}!'
+class COMSOLOutput(Schema):
+    label = Quantity(type=str, description='Label of the node.')
+    api_class = Quantity(type=str, description='Class of the node.')
+    api_type = Quantity(type=str, description='Type of the node.')
+    name = Quantity(type=str, description='Name of the node.')
+    display_label = Quantity(type=str, description='Display label of the node.')
+    nodes = SubSection(
+        sub_section=Node.m_def, repeats=True, description='Child nodes of the node.'
+    )
+    settings = SubSection(
+        sub_section=Setting.m_def, repeats=True, description='Settings of the node.'
+    )
 
 
 m_package.__init_metainfo__()
